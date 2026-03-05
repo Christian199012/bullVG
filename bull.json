@@ -1,0 +1,63 @@
+[
+  {
+    "id": "VH12345",
+    "name": "VH Example",
+    "breed": "Holstein",
+
+    "polled": true,
+    "a2a2": true,
+    "inStock": true,
+
+    "semen": ["Sexed","Conventional"],
+
+    "metrics": {
+      "NTM": 28,
+      "Milk_kg": 1200,
+      "Daughter_fertility": 112,
+      "General_health": 108,
+      "Calving_sire": 111,
+      "Udder_health": 110,
+      "Longevity": 109
+    },
+
+    "scores": {
+      "milk": 80,
+      "fertility": 75,
+      "health": 70,
+      "calvingEase": 85
+    },
+
+    "tags": ["Robot","High NTM"]
+  },
+
+  {
+    "id": "VH67890",
+    "name": "VH Power",
+    "breed": "Holstein",
+
+    "polled": false,
+    "a2a2": false,
+    "inStock": true,
+
+    "semen": ["Conventional"],
+
+    "metrics": {
+      "NTM": 24,
+      "Milk_kg": 1450,
+      "Daughter_fertility": 105,
+      "General_health": 103,
+      "Calving_sire": 108,
+      "Udder_health": 107,
+      "Longevity": 106
+    },
+
+    "scores": {
+      "milk": 90,
+      "fertility": 60,
+      "health": 65,
+      "calvingEase": 60
+    },
+
+    "tags": ["High milk"]
+  }
+]

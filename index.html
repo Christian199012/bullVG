@@ -3,335 +3,187 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>AI Bull Finder Demo</title>
+  <title>AI Bull Advisor — Demo</title>
   <style>
-    :root { color-scheme: light; }
+    :root{
+      --bg:#0b1220; --bg2:#070b14; --card:rgba(255,255,255,.08);
+      --stroke:rgba(255,255,255,.12); --text:rgba(255,255,255,.92);
+      --muted:rgba(255,255,255,.70); --muted2:rgba(255,255,255,.55);
+      --blue:#60a5fa; --green:#34d399; --shadow:0 18px 60px rgba(0,0,0,.45);
+      --r:18px; --r2:14px;
+      --mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+      --sans:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;
+    }
+    *{box-sizing:border-box}
     body{
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
-      background:#f6f7fb;
-      margin:0;
-      padding:28px 14px;
-      color:#0f172a;
+      margin:0; font-family:var(--sans); color:var(--text);
+      background:
+        radial-gradient(900px 500px at 12% 10%, rgba(96,165,250,.22), transparent 55%),
+        radial-gradient(700px 500px at 78% 18%, rgba(52,211,153,.20), transparent 55%),
+        linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
+      padding:28px 14px 34px;
     }
-    .wrap{
-      max-width: 900px;
-      margin: 0 auto;
-      display: grid;
-      gap: 16px;
-      grid-template-columns: 1fr;
+    .wrap{max-width:1120px;margin:0 auto;display:grid;gap:14px}
+    .topbar{
+      display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+      padding:14px 16px;border:1px solid var(--stroke);border-radius:var(--r);
+      background:linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.03));
+      box-shadow:var(--shadow);backdrop-filter:blur(10px);
     }
-    .card{
-      background:#fff;
-      border:1px solid #e5e7eb;
-      border-radius:14px;
-      box-shadow: 0 8px 30px rgba(15,23,42,0.06);
-      overflow:hidden;
+    .brand{display:flex;align-items:center;gap:10px}
+    .logo{width:34px;height:34px;border-radius:12px;
+      background:linear-gradient(135deg, rgba(96,165,250,.95), rgba(52,211,153,.92));
+      box-shadow:0 12px 30px rgba(96,165,250,.25);
     }
-    header{
-      padding:16px 18px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      border-bottom:1px solid #e5e7eb;
-    }
-    header h1{
-      margin:0;
-      font-size:16px;
-      letter-spacing:0.2px;
-    }
-    header .hint{
-      font-size:12px;
-      color:#475569;
-    }
-    .grid{
-      display:grid;
-      grid-template-columns: 1.1fr 0.9fr;
-      gap: 0;
-    }
-    @media (max-width: 900px){
-      .grid{ grid-template-columns: 1fr; }
-    }
-
-    /* Chat */
-    .chat{
-      padding: 16px 16px 10px;
-      min-height: 520px;
-      display:flex;
-      flex-direction:column;
-      gap: 10px;
-    }
-    .bubble{
-      max-width: 92%;
-      padding: 10px 12px;
-      border-radius: 14px;
-      line-height: 1.25;
-      font-size: 14px;
-      border:1px solid transparent;
-      white-space: pre-wrap;
-    }
-    .bot{
-      background:#f1f5f9;
-      border-color:#e2e8f0;
-      align-self:flex-start;
-    }
-    .user{
-      background:#2563eb;
-      color:white;
-      align-self:flex-end;
-    }
-    .choices{
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-      margin-top: 6px;
-    }
-    button.choice{
-      border:1px solid #e2e8f0;
-      background:#fff;
-      color:#0f172a;
-      padding: 9px 10px;
-      border-radius: 999px;
-      font-size: 13px;
-      cursor:pointer;
-      transition: transform 0.02s ease, background 0.15s ease, border 0.15s ease;
-    }
-    button.choice:hover{ background:#f8fafc; }
-    button.choice:active{ transform: translateY(1px); }
-    button.primary{
-      background:#0f172a;
-      color:#fff;
-      border-color:#0f172a;
-    }
-    .chat-footer{
-      padding: 12px 16px 16px;
-      border-top:1px solid #e5e7eb;
-      display:flex;
-      gap:10px;
-      align-items:center;
-      justify-content:space-between;
-    }
+    .title{margin:0;font-size:14px;font-weight:800;letter-spacing:.2px}
+    .subtitle{margin:2px 0 0 0;font-size:12px;color:var(--muted)}
     .pill{
-      font-size:12px;
-      color:#475569;
-      background:#f8fafc;
-      border:1px solid #e2e8f0;
-      padding: 6px 10px;
-      border-radius:999px;
+      font-size:12px;color:var(--muted);border:1px solid var(--stroke);
+      background:rgba(255,255,255,.05);padding:7px 10px;border-radius:999px;white-space:nowrap;
     }
-    .linkbtn{
-      font-size:12px;
-      border:1px solid #e2e8f0;
-      background:#fff;
-      padding:6px 10px;
-      border-radius:999px;
-      cursor:pointer;
+    .btn{
+      border:1px solid var(--stroke);background:rgba(255,255,255,.06);color:var(--text);
+      padding:9px 11px;border-radius:999px;font-size:12px;cursor:pointer;
     }
-
-    /* Results */
-    .results{
-      border-left:1px solid #e5e7eb;
+    .btn:hover{background:rgba(255,255,255,.09)}
+    .btn.good{border-color:rgba(52,211,153,.45);background:rgba(52,211,153,.18)}
+    .grid{display:grid;grid-template-columns:.98fr 1.02fr;gap:14px}
+    @media (max-width:980px){.grid{grid-template-columns:1fr}}
+    .panel{
+      border:1px solid var(--stroke);border-radius:var(--r);background:rgba(255,255,255,.05);
+      box-shadow:var(--shadow);backdrop-filter:blur(10px);overflow:hidden;
     }
-    @media (max-width: 900px){
-      .results{ border-left:none; border-top:1px solid #e5e7eb; }
+    .panel-h{
+      padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
+      border-bottom:1px solid rgba(255,255,255,.10);
+      background:linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.03));
     }
-    .results-inner{
-      padding: 16px;
+    .panel-h h2{margin:0;font-size:13px;font-weight:800}
+    .panel-h .small{font-size:12px;color:var(--muted)}
+    .chat{padding:14px;min-height:560px;display:flex;flex-direction:column;gap:10px}
+    .bubble{
+      max-width:92%;padding:11px 12px;border-radius:16px;
+      border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.06);
+      font-size:14px;line-height:1.25;white-space:pre-wrap;
     }
-    .results h2{
-      margin:0 0 10px 0;
-      font-size:14px;
-      color:#0f172a;
+    .bot{align-self:flex-start}
+    .user{align-self:flex-end;border-color:rgba(96,165,250,.35);background:rgba(96,165,250,.18)}
+    .footer{
+      padding:12px 14px;border-top:1px solid rgba(255,255,255,.10);
+      display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;
+      background:rgba(0,0,0,.18);
     }
-    .sub{
-      margin:0 0 12px 0;
-      font-size:12px;
-      color:#475569;
+    .input{
+      flex:1;min-width:240px;border:1px solid rgba(255,255,255,.14);
+      background:rgba(0,0,0,.18);color:var(--text);
+      padding:10px 12px;border-radius:14px;font-size:13px;outline:none;
     }
-    .bull-list{
-      display:grid;
-      gap:10px;
+    .input::placeholder{color:rgba(255,255,255,.55)}
+    .send{
+      border:1px solid rgba(96,165,250,.55);background:rgba(96,165,250,.22);
+      color:var(--text);padding:10px 12px;border-radius:14px;cursor:pointer;font-weight:800;font-size:12px;
     }
+    .send:hover{background:rgba(96,165,250,.28)}
+    .results{padding:14px;display:grid;gap:10px}
+    .cards{display:grid;gap:10px}
     .bull{
-      border:1px solid #e5e7eb;
-      border-radius:14px;
-      padding: 12px;
-      display:grid;
-      gap:8px;
-      background:#fff;
+      border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);
+      border-radius:var(--r2);padding:12px;display:grid;gap:10px;
     }
-    .bull-top{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:12px;
+    .top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+    .left{display:flex;gap:10px;align-items:flex-start;min-width:0}
+    .avatar{
+      width:38px;height:38px;border-radius:14px;flex:0 0 auto;
+      background:linear-gradient(135deg, rgba(96,165,250,.35), rgba(52,211,153,.30));
+      border:1px solid rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;
+      font-weight:900;letter-spacing:.5px;
     }
-    .bull-name{
-      font-weight: 700;
-      font-size: 14px;
-    }
-    .price{
-      font-weight: 700;
-      font-size: 13px;
-      white-space:nowrap;
-    }
-    .meta{
-      font-size:12px;
-      color:#475569;
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-    }
-    .badges{
-      display:flex;
-      flex-wrap:wrap;
-      gap:6px;
-    }
+    .name{font-weight:900;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:420px}
+    .id{font-family:var(--mono);font-size:11px;color:var(--muted2);margin-top:2px}
+    .meta{display:flex;flex-wrap:wrap;gap:8px;font-size:12px;color:var(--muted);margin-top:6px}
+    .right{display:flex;align-items:flex-end;flex-direction:column;gap:8px;min-width:120px}
+    .score{font-size:12px;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.18);
+      padding:6px 10px;border-radius:999px;white-space:nowrap}
+    .badges{display:flex;flex-wrap:wrap;gap:6px}
     .badge{
-      font-size:11px;
-      padding: 4px 8px;
-      border-radius:999px;
-      border:1px solid #e2e8f0;
-      background:#f8fafc;
-      color:#0f172a;
+      font-size:11px;padding:4px 8px;border-radius:999px;border:1px solid rgba(255,255,255,.14);
+      background:rgba(0,0,0,.14);color:rgba(255,255,255,.88);
     }
-    .badge.good{ background:#ecfeff; border-color:#a5f3fc; }
-    .badge.warn{ background:#fff7ed; border-color:#fed7aa; }
-    .cta{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-    }
-    .buy{
-      border:none;
-      background:#16a34a;
-      color:white;
-      padding: 8px 10px;
-      border-radius:10px;
-      cursor:pointer;
-      font-weight:700;
-      font-size:12px;
-    }
-    .buy:active{ transform: translateY(1px); }
+    .badge.green{border-color:rgba(52,211,153,.45);background:rgba(52,211,153,.16)}
+    .badge.blue{border-color:rgba(96,165,250,.45);background:rgba(96,165,250,.16)}
     .why{
-      font-size:12px;
-      color:#334155;
-      background:#f8fafc;
-      border:1px solid #e2e8f0;
-      padding:8px 10px;
-      border-radius:12px;
+      font-size:12px;color:rgba(255,255,255,.78);
+      border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.14);
+      padding:9px 10px;border-radius:14px;
     }
-    .muted{
-      color:#64748b;
-      font-size:12px;
-      margin-top: 8px;
-    }
+    .kpi{display:flex;flex-wrap:wrap;gap:10px;font-size:12px;color:var(--muted)}
+    .kpi span{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);padding:6px 8px;border-radius:12px}
+    .note{color:var(--muted2);font-size:12px;padding:12px 14px;border-top:1px solid rgba(255,255,255,.10);background:rgba(0,0,0,.18)}
+    code{font-family:var(--mono);font-size:11px}
   </style>
 </head>
 <body>
   <div class="wrap">
-    <div class="card">
-      <header>
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
         <div>
-          <h1>AI Bull Finder — Web Demo (Semen purchase assistant)</h1>
-          <div class="hint">Guided chat → filters + ranking → Top picks (mock data)</div>
+          <div class="title">AI Bull Advisor — Free-text Prototype</div>
+          <div class="subtitle">Static GitHub Pages demo · Uses <code>bulls.json</code> · No mating / cow-matching</div>
         </div>
-        <div class="pill" id="statusPill">Not started</div>
-      </header>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <span class="pill" id="statusPill">Loading…</span>
+        <button class="btn" id="restartBtn">Restart</button>
+        <button class="btn good" id="downloadBtn">Download CSV</button>
+      </div>
+    </div>
 
-      <div class="grid">
-        <!-- Chat -->
-        <div>
-          <div class="chat" id="chat"></div>
-          <div class="chat-footer">
-            <button class="linkbtn" id="restartBtn">Restart</button>
-            <div class="pill" id="prefsPill">Preferences: —</div>
-          </div>
+    <div class="grid">
+      <!-- Chat -->
+      <div class="panel">
+        <div class="panel-h">
+          <h2>Chat</h2>
+          <span class="small" id="prefsPill">Preferences: —</span>
         </div>
 
-        <!-- Results -->
+        <div class="chat" id="chat"></div>
+
+        <div class="footer">
+          <input class="input" id="prompt" placeholder='Try: "sexed semen for heifers, high fertility, polled"' />
+          <button class="send" id="sendBtn">Send</button>
+          <span class="pill" id="countPill">0 bulls loaded</span>
+        </div>
+      </div>
+
+      <!-- Results -->
+      <div class="panel">
+        <div class="panel-h">
+          <h2>Recommendations</h2>
+          <span class="small" id="resultsSub">Ask a question to see results.</span>
+        </div>
         <div class="results">
-          <div class="results-inner">
-            <h2>Recommended bulls</h2>
-            <p class="sub" id="resultsSub">Answer the questions to see results.</p>
-            <div class="bull-list" id="bullList"></div>
-            <p class="muted">
-              Demo note: This prototype uses mock data and a simple scoring model (no mating / no cow-level matching).
-            </p>
-          </div>
+          <div class="cards" id="bullList"></div>
+        </div>
+        <div class="note">
+          This is keyword-based free-text parsing (no paid AI). To connect to a real AI model later, replace the parser with an API call.
         </div>
       </div>
     </div>
   </div>
 
 <script>
-  // ----------------------------
-  // Mock data (edit freely)
-  // ----------------------------
-  const BULLS = [
-    // Holstein
-    { id:"H001", name:"Viking Strong", breed:"Holstein", semen:["Sexed","Conventional"], price:{Sexed:38, Conventional:24}, inStock:true,
-      calvingEase: 8.8, milk: 105, fat: 85, protein: 80, fertility: 78, health: 82, longevity: 77,
-      tags:["Heifer Safe","Robot","Udder"], polled:false, a2a2:false
-    },
-    { id:"H002", name:"Nordic Power", breed:"Holstein", semen:["Conventional"], price:{Conventional:20}, inStock:true,
-      calvingEase: 6.2, milk: 120, fat: 70, protein: 75, fertility: 60, health: 62, longevity: 64,
-      tags:["Production"], polled:false, a2a2:false
-    },
-    { id:"H003", name:"Polar Milk", breed:"Holstein", semen:["Sexed","Conventional"], price:{Sexed:42, Conventional:26}, inStock:true,
-      calvingEase: 7.6, milk: 130, fat: 88, protein: 86, fertility: 63, health: 66, longevity: 68,
-      tags:["Production","Udder"], polled:false, a2a2:true
-    },
-    { id:"H004", name:"Arctic Fertility", breed:"Holstein", semen:["Sexed","Conventional"], price:{Sexed:40, Conventional:25}, inStock:false,
-      calvingEase: 8.1, milk: 92, fat: 78, protein: 76, fertility: 88, health: 84, longevity: 82,
-      tags:["Fertility","Health","Heifer Safe"], polled:false, a2a2:false
-    },
-    { id:"H005", name:"Viking Polled Star", breed:"Holstein", semen:["Sexed","Conventional"], price:{Sexed:44, Conventional:28}, inStock:true,
-      calvingEase: 8.3, milk: 96, fat: 74, protein: 72, fertility: 75, health: 76, longevity: 74,
-      tags:["Polled","Heifer Safe"], polled:true, a2a2:false
-    },
-    { id:"H006", name:"Skylight Health", breed:"Holstein", semen:["Conventional"], price:{Conventional:22}, inStock:true,
-      calvingEase: 7.9, milk: 88, fat: 72, protein: 70, fertility: 82, health: 90, longevity: 86,
-      tags:["Health","Longevity"], polled:false, a2a2:true
-    },
+  let BULLS = [];
 
-    // Jersey
-    { id:"J101", name:"Jersey Gold", breed:"Jersey", semen:["Sexed","Conventional"], price:{Sexed:36, Conventional:22}, inStock:true,
-      calvingEase: 9.1, milk: 85, fat: 95, protein: 92, fertility: 76, health: 74, longevity: 78,
-      tags:["Heifer Safe","Components"], polled:false, a2a2:true
-    },
-    { id:"J102", name:"Butter Protein", breed:"Jersey", semen:["Conventional"], price:{Conventional:19}, inStock:true,
-      calvingEase: 8.7, milk: 78, fat: 98, protein: 97, fertility: 70, health: 72, longevity: 73,
-      tags:["Components"], polled:false, a2a2:false
-    },
-    { id:"J103", name:"Jersey Easy", breed:"Jersey", semen:["Sexed"], price:{Sexed:34}, inStock:true,
-      calvingEase: 9.4, milk: 72, fat: 88, protein: 86, fertility: 82, health: 78, longevity: 80,
-      tags:["Heifer Safe","Fertility"], polled:false, a2a2:true
-    },
-
-    // RDC
-    { id:"R201", name:"Red Balance", breed:"RDC", semen:["Conventional"], price:{Conventional:21}, inStock:true,
-      calvingEase: 8.4, milk: 92, fat: 80, protein: 79, fertility: 80, health: 78, longevity: 79,
-      tags:["Balanced"], polled:false, a2a2:false
-    },
-    { id:"R202", name:"Red Robot", breed:"RDC", semen:["Sexed","Conventional"], price:{Sexed:39, Conventional:25}, inStock:true,
-      calvingEase: 8.0, milk: 90, fat: 76, protein: 75, fertility: 77, health: 80, longevity: 81,
-      tags:["Robot","Udder"], polled:true, a2a2:false
-    },
-  ];
-
-  // ----------------------------
-  // State
-  // ----------------------------
   const state = {
-    breed: null,        // "Holstein" | "Jersey" | "RDC"
-    animal: null,       // "Heifer" | "Cow"
-    semen: null,        // "Sexed" | "Conventional"
-    focus: null,        // "Balanced" | "Production" | "Health & Fertility" | "Heifer Safe"
+    breed: null,
+    animal: null,     // Heifer / Cow
+    semen: null,      // Sexed / Conventional
+    focus: null,      // Balanced / Production / Health & Fertility / Heifer Safe
     mustPolled: false,
     mustA2A2: false,
     inStockOnly: true,
+    lastQuery: ""
   };
 
   const chatEl = document.getElementById("chat");
@@ -339,9 +191,30 @@
   const statusPill = document.getElementById("statusPill");
   const prefsPill = document.getElementById("prefsPill");
   const resultsSub = document.getElementById("resultsSub");
+  const countPill = document.getElementById("countPill");
+  const promptEl = document.getElementById("prompt");
+  const sendBtn = document.getElementById("sendBtn");
   const restartBtn = document.getElementById("restartBtn");
+  const downloadBtn = document.getElementById("downloadBtn");
 
-  restartBtn.addEventListener("click", () => start());
+  restartBtn.addEventListener("click", () => hardReset());
+  downloadBtn.addEventListener("click", () => downloadCSV());
+  sendBtn.addEventListener("click", () => onSend());
+  promptEl.addEventListener("keydown", (e) => { if(e.key === "Enter") onSend(); });
+
+  function uniq(arr){ return [...new Set(arr)].filter(Boolean); }
+  function norm(s){ return String(s ?? "").trim().toLowerCase(); }
+
+  function addBubble(text, who="bot"){
+    const div = document.createElement("div");
+    div.className = `bubble ${who}`;
+    div.textContent = text;
+    chatEl.appendChild(div);
+    chatEl.scrollTop = chatEl.scrollHeight;
+  }
+
+  function setStatus(text){ statusPill.textContent = text; }
+  function setPrefsPill(){ prefsPill.textContent = "Preferences: " + pillText(); }
 
   function pillText(){
     const bits = [];
@@ -355,177 +228,285 @@
     return bits.length ? bits.join(" · ") : "—";
   }
 
-  function addBubble(text, who="bot"){
-    const div = document.createElement("div");
-    div.className = `bubble ${who}`;
-    div.textContent = text;
-    chatEl.appendChild(div);
-    chatEl.scrollTop = chatEl.scrollHeight;
+  // --------- Free-text parser (keyword based)
+  function parseQuery(q){
+    const t = norm(q);
+
+    // breed detection (from your data)
+    const breeds = uniq(BULLS.map(b => b.breed)).map(norm);
+    let breed = null;
+    for(const br of breeds){
+      if(br && (t.includes(br) || t.includes(br.replace(/\s+/g,'')))) { breed = br; break; }
+    }
+
+    const heifer = /\bheifer(s)?\b|\bheifers\b|\bmaiden\b/.test(t);
+    const cow = /\bcow(s)?\b|\bcows\b/.test(t);
+    const sexed = /\bsexed\b|\bsex\b|\bfemale semen\b/.test(t);
+    const conventional = /\bconventional\b|\bconv\b|\bregular\b/.test(t);
+
+    const polled = /\bpolled\b|\bhornless\b/.test(t);
+    const a2a2 = /\ba2a2\b/.test(t);
+
+    const fertility = /\bfertility\b|\bdaughter fertility\b|\brepro\b/.test(t);
+    const health = /\bhealth\b|\budder health\b|\bmastitis\b|\bcell count\b|\bscc\b/.test(t);
+    const production = /\bproduction\b|\bmilk\b|\bkg milk\b|\byield\b/.test(t);
+
+    // focus (ranking style)
+    let focus = "Balanced";
+    if(heifer || t.includes("calving") || t.includes("easy calving") || t.includes("heifer safe")) focus = "Heifer Safe";
+    if(fertility && health) focus = "Health & Fertility";
+    else if(fertility && !production) focus = "Health & Fertility";
+    else if(production && !fertility && !health) focus = "Production";
+
+    // semen type preference
+    let semen = null;
+    if(sexed && !conventional) semen = "Sexed";
+    if(conventional && !sexed) semen = "Conventional";
+
+    // animal type
+    let animal = null;
+    if(heifer && !cow) animal = "Heifer";
+    if(cow && !heifer) animal = "Cow";
+
+    return {
+      breed: breed ? prettyBreed(breed) : null,
+      animal,
+      semen,
+      focus,
+      mustPolled: polled,
+      mustA2A2: a2a2,
+      inStockOnly: true
+    };
   }
 
-  function addChoices(options){
-    const wrap = document.createElement("div");
-    wrap.className = "choices";
-    options.forEach(opt => {
-      const btn = document.createElement("button");
-      btn.className = "choice" + (opt.primary ? " primary" : "");
-      btn.textContent = opt.label;
-      btn.onclick = () => opt.onClick();
-      wrap.appendChild(btn);
-    });
-    chatEl.appendChild(wrap);
-    chatEl.scrollTop = chatEl.scrollHeight;
+  function prettyBreed(b){
+    // match to existing capitalization in data
+    const found = uniq(BULLS.map(x => x.breed)).find(x => norm(x) === norm(b));
+    return found || b;
   }
 
-  function setStatus(text){
-    statusPill.textContent = text;
-    prefsPill.textContent = "Preferences: " + pillText();
-  }
-
-  // ----------------------------
-  // Scoring model (simple, explainable)
-  // ----------------------------
+  // --------- scoring (expects bulls.json has "scores" normalized 0..100)
   function weightsForFocus(){
-    // All traits 0..100-ish in mock data. Higher is better for these.
-    // calvingEase: higher is easier.
     switch(state.focus){
-      case "Production":
-        return { milk:0.45, fat:0.15, protein:0.15, fertility:0.05, health:0.10, longevity:0.10, calving:0.0 };
-      case "Health & Fertility":
-        return { milk:0.10, fat:0.05, protein:0.05, fertility:0.40, health:0.25, longevity:0.15, calving:0.0 };
-      case "Heifer Safe":
-        return { milk:0.15, fat:0.05, protein:0.05, fertility:0.15, health:0.10, longevity:0.10, calving:0.40 };
-      case "Balanced":
-      default:
-        return { milk:0.25, fat:0.10, protein:0.10, fertility:0.20, health:0.15, longevity:0.15, calving:0.05 };
+      case "Production": return { milk:0.55, fertility:0.10, health:0.15, calving:0.20 };
+      case "Health & Fertility": return { milk:0.15, fertility:0.45, health:0.35, calving:0.05 };
+      case "Heifer Safe": return { milk:0.10, fertility:0.15, health:0.15, calving:0.60 };
+      default: return { milk:0.30, fertility:0.25, health:0.25, calving:0.20 };
     }
   }
 
   function scoreBull(b){
     const w = weightsForFocus();
-    const calv = b.calvingEase * 10; // scale ~0-100
-    return (
-      w.milk*b.milk +
-      w.fat*b.fat +
-      w.protein*b.protein +
-      w.fertility*b.fertility +
-      w.health*b.health +
-      w.longevity*b.longevity +
-      w.calving*calv
-    );
+    const s = b.scores || {};
+    const milk = Number(s.milk ?? 50);
+    const fert = Number(s.fertility ?? 50);
+    const health = Number(s.health ?? 50);
+    const calv = Number(s.calvingEase ?? 50);
+    return w.milk*milk + w.fertility*fert + w.health*health + w.calving*calv;
+  }
+
+  function badgeType(label){
+    const green = ["Polled","A2A2","High NTM","Fertility","Health","Udder health","Calving ease","Robot","Longevity"];
+    if(green.includes(label)) return "badge green";
+    return "badge blue";
+  }
+
+  function avatarText(name){
+    const parts = String(name||"").trim().split(/\s+/).filter(Boolean);
+    if(parts.length === 0) return "?";
+    const first = parts[0][0] || "?";
+    const last = (parts.length>1 ? parts[parts.length-1][0] : parts[0][1]) || "";
+    return (first+last).toUpperCase();
   }
 
   function explainBull(b){
+    const m = b.metrics || {};
     const reasons = [];
-    if(state.animal === "Heifer" && b.calvingEase >= 8.0) reasons.push("high calving ease for heifers");
-    if(state.focus === "Production" && (b.milk >= 115 || (b.fat+b.protein) >= 165)) reasons.push("strong production profile");
-    if(state.focus === "Health & Fertility" && (b.fertility >= 78 || b.health >= 82)) reasons.push("health/fertility oriented");
+    if(state.animal === "Heifer" && (m.Calving_sire ?? 0) >= 110) reasons.push("good calving ease for heifers");
+    if(state.focus === "Production" && (m.Milk_kg ?? 0) >= 100) reasons.push("strong milk kg");
+    if(state.focus === "Health & Fertility" && (m.Daughter_fertility ?? 0) >= 110) reasons.push("high daughter fertility");
+    if(state.focus === "Health & Fertility" && (m.General_health ?? 0) >= 110) reasons.push("strong general health");
     if(state.mustPolled && b.polled) reasons.push("polled requirement");
     if(state.mustA2A2 && b.a2a2) reasons.push("A2A2 requirement");
-    if(reasons.length === 0) reasons.push("overall good match to your settings");
+    if(reasons.length === 0) reasons.push("overall good match to your request");
     return "Why: " + reasons.slice(0,2).join("; ") + ".";
   }
 
-  function badgeClass(label){
-    const good = ["Heifer Safe","Polled","A2A2","Health","Fertility","Robot","Components","Longevity"];
-    const warn = ["Production"];
-    if(good.includes(label)) return "badge good";
-    if(warn.includes(label)) return "badge warn";
-    return "badge";
+  function getRecommendations(){
+    let list = [...BULLS];
+
+    if(state.breed) list = list.filter(b => norm(b.breed) === norm(state.breed));
+    if(state.inStockOnly) list = list.filter(b => !!b.inStock);
+
+    if(state.semen) list = list.filter(b => (b.semen || []).includes(state.semen));
+
+    // Heifer gate: use Calving_sire if present
+    if(state.animal === "Heifer"){
+      const calv = (b) => Number((b.metrics || {}).Calving_sire ?? NaN);
+      list = list.filter(b => isNaN(calv(b)) ? true : calv(b) >= 110);
+    }
+
+    if(state.mustPolled) list = list.filter(b => !!b.polled);
+    if(state.mustA2A2) list = list.filter(b => !!b.a2a2);
+
+    return list.map(b => ({b, s: scoreBull(b)})).sort((x,y)=>y.s-x.s).slice(0,10);
   }
 
   function renderResults(){
-    prefsPill.textContent = "Preferences: " + pillText();
+    setPrefsPill();
+    const recs = getRecommendations();
 
-    // Require at least breed + semen + animal to show real results
-    const ready = !!(state.breed && state.animal && state.semen && state.focus);
-    if(!ready){
+    if(!state.lastQuery){
+      resultsSub.textContent = "Ask a question to see results.";
       bullListEl.innerHTML = "";
-      resultsSub.textContent = "Answer the questions to see results.";
       return;
     }
 
-    // Filter
-    let list = BULLS.filter(b => b.breed === state.breed);
-
-    if(state.inStockOnly) list = list.filter(b => b.inStock);
-    list = list.filter(b => b.semen.includes(state.semen));
-
-    if(state.animal === "Heifer"){
-      // Simple safety gate for demo
-      list = list.filter(b => b.calvingEase >= 8.0);
-    }
-
-    if(state.mustPolled) list = list.filter(b => b.polled);
-    if(state.mustA2A2) list = list.filter(b => b.a2a2);
-
-    // Score + sort
-    const scored = list
-      .map(b => ({ b, s: scoreBull(b) }))
-      .sort((x,y) => y.s - x.s)
-      .slice(0, 10);
-
-    if(scored.length === 0){
+    if(recs.length === 0){
+      resultsSub.textContent = "No matches. Try removing constraints (Polled/A2A2), changing semen type, or switching heifer/cow.";
       bullListEl.innerHTML = "";
-      resultsSub.textContent = "No bulls match these filters. Try removing Polled/A2A2 or switching semen type.";
       return;
     }
 
-    resultsSub.textContent = `Top ${scored.length} picks based on filters + "${state.focus}" scoring.`;
-
-    // Render
+    resultsSub.textContent = `Top ${recs.length} picks · ${state.focus} ranking`;
     bullListEl.innerHTML = "";
-    scored.forEach(({b, s}, idx) => {
-      const el = document.createElement("div");
-      el.className = "bull";
 
-      const price = b.price[state.semen];
+    recs.forEach(({b, s}, idx) => {
+      const m = b.metrics || {};
       const badges = [];
       if(b.polled) badges.push("Polled");
       if(b.a2a2) badges.push("A2A2");
-      b.tags.forEach(t => badges.push(t));
+      (b.tags || []).forEach(t => badges.push(t));
+      if(!isNaN(Number(m.NTM)) && Number(m.NTM) >= 20) badges.push("High NTM");
 
+      const el = document.createElement("div");
+      el.className = "bull";
       el.innerHTML = `
-        <div class="bull-top">
-          <div>
-            <div class="bull-name">#${idx+1} — ${b.name} <span style="font-weight:600;color:#64748b">(${b.id})</span></div>
-            <div class="meta">
-              <span>Breed: ${b.breed}</span>
-              <span>Calving ease: ${b.calvingEase.toFixed(1)}</span>
-              <span>Score: ${s.toFixed(0)}</span>
+        <div class="top">
+          <div class="left">
+            <div class="avatar">${avatarText(b.name)}</div>
+            <div style="min-width:0">
+              <div class="name">#${idx+1} — ${b.name}</div>
+              <div class="id">${b.id} · ${b.breed}</div>
+              <div class="meta">
+                <span>NTM: <b style="color:rgba(255,255,255,.92)">${isNaN(Number(m.NTM)) ? "—" : Number(m.NTM).toFixed(0)}</b></span>
+                <span>Milk kg: <b style="color:rgba(255,255,255,.92)">${isNaN(Number(m.Milk_kg)) ? "—" : Number(m.Milk_kg).toFixed(0)}</b></span>
+                <span>Fertility: <b style="color:rgba(255,255,255,.92)">${isNaN(Number(m.Daughter_fertility)) ? "—" : Number(m.Daughter_fertility).toFixed(0)}</b></span>
+                <span>Health: <b style="color:rgba(255,255,255,.92)">${isNaN(Number(m.General_health)) ? "—" : Number(m.General_health).toFixed(0)}</b></span>
+              </div>
             </div>
           </div>
-          <div class="price">€${price}/dose</div>
+          <div class="right">
+            <div class="score">Score: <b>${s.toFixed(0)}</b></div>
+          </div>
         </div>
 
         <div class="badges">
-          ${badges.slice(0,7).map(t => `<span class="${badgeClass(t)}">${t}</span>`).join("")}
+          ${uniq(badges).slice(0,10).map(t => `<span class="${badgeType(t)}">${t}</span>`).join("")}
         </div>
 
         <div class="why">${explainBull(b)}</div>
 
-        <div class="cta">
-          <div class="meta">
-            <span>Milk: ${b.milk}</span>
-            <span>Fertility: ${b.fertility}</span>
-            <span>Health: ${b.health}</span>
-          </div>
-          <button class="buy" onclick="alert('Demo: added ${b.name} (${state.semen}) to cart')">Add to cart</button>
+        <div class="kpi">
+          <span>Calving sire: <b style="color:rgba(255,255,255,.92)">${isNaN(Number(m.Calving_sire)) ? "—" : Number(m.Calving_sire).toFixed(0)}</b></span>
+          <span>Udder health: <b style="color:rgba(255,255,255,.92)">${isNaN(Number(m.Udder_health)) ? "—" : Number(m.Udder_health).toFixed(0)}</b></span>
+          <span>Longevity: <b style="color:rgba(255,255,255,.92)">${isNaN(Number(m.Longevity)) ? "—" : Number(m.Longevity).toFixed(0)}</b></span>
         </div>
       `;
       bullListEl.appendChild(el);
     });
   }
 
-  // ----------------------------
-  // Chat flow
-  // ----------------------------
-  function clearChat(){
-    chatEl.innerHTML = "";
+  function downloadCSV(){
+    const recs = getRecommendations();
+    if(!state.lastQuery || !recs.length){
+      alert("Nothing to download yet. Ask a question first.");
+      return;
+    }
+    const rows = recs.map(({b, s}, idx) => {
+      const m = b.metrics || {};
+      return {
+        rank: idx+1,
+        id: b.id,
+        name: b.name,
+        breed: b.breed,
+        semen_type: state.semen ?? "",
+        focus: state.focus ?? "",
+        heifer_or_cow: state.animal ?? "",
+        polled_required: state.mustPolled ? "yes" : "no",
+        a2a2_required: state.mustA2A2 ? "yes" : "no",
+        NTM: m.NTM ?? "",
+        Milk_kg: m.Milk_kg ?? "",
+        Daughter_fertility: m.Daughter_fertility ?? "",
+        General_health: m.General_health ?? "",
+        Calving_sire: m.Calving_sire ?? "",
+        score: s.toFixed(2),
+        query: state.lastQuery
+      };
+    });
+
+    const cols = Object.keys(rows[0]);
+    const csv = [
+      cols.join(","),
+      ...rows.map(r => cols.map(c => {
+        const v = String(r[c] ?? "");
+        return (v.includes(",") || v.includes('"') || v.includes("\n")) ? `"${v.replace(/"/g,'""')}"` : v;
+      }).join(","))
+    ].join("\n");
+
+    const blob = new Blob([csv], {type:"text/csv;charset=utf-8"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "bull_recommendations.csv";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
   }
 
-  function start(){
-    // Reset state
+  function applyParsed(parsed){
+    state.breed = parsed.breed ?? state.breed;
+    state.animal = parsed.animal ?? state.animal;
+    state.semen = parsed.semen ?? state.semen;
+    state.focus = parsed.focus ?? state.focus;
+    state.mustPolled = !!parsed.mustPolled;
+    state.mustA2A2 = !!parsed.mustA2A2;
+    state.inStockOnly = !!parsed.inStockOnly;
+  }
+
+  function onSend(){
+    const q = promptEl.value.trim();
+    if(!q) return;
+
+    addBubble(q, "user");
+    state.lastQuery = q;
+
+    const parsed = parseQuery(q);
+    applyParsed(parsed);
+
+    // Respond like a chat assistant
+    const parts = [];
+    if(state.breed) parts.push(`Breed: ${state.breed}`);
+    if(state.animal) parts.push(`For: ${state.animal.toLowerCase()}s`);
+    if(state.semen) parts.push(`Semen: ${state.semen}`);
+    parts.push(`Ranking: ${state.focus}`);
+    if(state.mustPolled) parts.push("Polled required");
+    if(state.mustA2A2) parts.push("A2A2 required");
+
+    addBubble(
+      "Got it. I'll use:\n- " + parts.join("\n- ") +
+      "\n\nHere are the top matches from the current bull list.",
+      "bot"
+    );
+
+    promptEl.value = "";
+    renderResults();
+  }
+
+  function hardReset(){
+    chatEl.innerHTML = "";
+    bullListEl.innerHTML = "";
     state.breed = null;
     state.animal = null;
     state.semen = null;
@@ -533,86 +514,27 @@
     state.mustPolled = false;
     state.mustA2A2 = false;
     state.inStockOnly = true;
-
-    clearChat();
-    setStatus("In progress");
-    addBubble("Hi! I can help you find bulls to purchase semen.\nNo mating matching — just quick buying recommendations.\n\nLet’s start: Which breed are you looking for?");
-    addChoices([
-      { label:"Holstein", primary:true, onClick: () => { choose("breed","Holstein"); } },
-      { label:"Jersey", onClick: () => { choose("breed","Jersey"); } },
-      { label:"RDC", onClick: () => { choose("breed","RDC"); } },
-    ]);
-    renderResults();
+    state.lastQuery = "";
+    setPrefsPill();
+    resultsSub.textContent = "Ask a question to see results.";
+    addBubble("Hi! Ask me for bulls in plain English.\nExamples:\n- sexed semen for heifers with high fertility\n- polled bulls with good milk\n- best NTM bulls for cows", "bot");
   }
 
-  function choose(key, value){
-    state[key] = value;
-    addBubble(value, "user");
-
-    if(key === "breed") return askAnimal();
-    if(key === "animal") return askSemen();
-    if(key === "semen") return askFocus();
-    if(key === "focus") return askMustHaves();
-    renderResults();
+  async function loadBulls(){
+    try{
+      const res = await fetch("./bulls.json");
+      BULLS = await res.json();
+      countPill.textContent = `${BULLS.length} bulls loaded`;
+      setStatus("Ready");
+      hardReset();
+    }catch(e){
+      console.error(e);
+      setStatus("Failed to load bulls.json");
+      addBubble("Could not load bulls.json. Put bulls.json in the same folder as index.html in your repo.", "bot");
+    }
   }
 
-  function askAnimal(){
-    addBubble("Great. Is this semen mainly for heifers or cows?");
-    addChoices([
-      { label:"Heifer (prioritize calving ease)", primary:true, onClick: () => choose("animal","Heifer") },
-      { label:"Cow", onClick: () => choose("animal","Cow") },
-    ]);
-    renderResults();
-  }
-
-  function askSemen(){
-    addBubble("What semen type do you want?");
-    addChoices([
-      { label:"Sexed", primary:true, onClick: () => choose("semen","Sexed") },
-      { label:"Conventional", onClick: () => choose("semen","Conventional") },
-    ]);
-    renderResults();
-  }
-
-  function askFocus(){
-    addBubble("What’s your main focus for ranking the bulls?");
-    addChoices([
-      { label:"Balanced", primary:true, onClick: () => choose("focus","Balanced") },
-      { label:"Production", onClick: () => choose("focus","Production") },
-      { label:"Health & Fertility", onClick: () => choose("focus","Health & Fertility") },
-      { label:"Heifer Safe", onClick: () => choose("focus","Heifer Safe") },
-    ]);
-    renderResults();
-  }
-
-  function askMustHaves(){
-    addBubble("Any must-have traits? (Optional)");
-    addChoices([
-      { label: state.mustPolled ? "✅ Polled" : "Polled", onClick: () => { state.mustPolled = !state.mustPolled; refreshStep(); } },
-      { label: state.mustA2A2 ? "✅ A2A2" : "A2A2", onClick: () => { state.mustA2A2 = !state.mustA2A2; refreshStep(); } },
-      { label: state.inStockOnly ? "✅ In stock only" : "In stock only", primary:true, onClick: () => { state.inStockOnly = !state.inStockOnly; refreshStep(); } },
-      { label:"Show results", primary:true, onClick: () => finalize(); },
-    ]);
-    renderResults();
-  }
-
-  function refreshStep(){
-    // remove last choices row and re-ask must haves cleanly
-    // simplest: restart from must-have question
-    // keep chat bubbles; just add a small bot note
-    addBubble("Updated filters.", "bot");
-    renderResults();
-  }
-
-  function finalize(){
-    addBubble("Show results", "user");
-    addBubble("Done — here are your top recommendations. You can restart anytime to try another scenario.");
-    setStatus("Ready");
-    renderResults();
-  }
-
-  // Init
-  start();
+  loadBulls();
 </script>
 </body>
 </html>
